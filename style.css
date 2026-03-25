@@ -1,0 +1,181 @@
+:root {
+  --bg: #0b1320;
+  --panel: #14243d;
+  --felt: #1f7a43;
+  --felt-dark: #196337;
+  --rail: #5f3b22;
+  --ink: #e7efff;
+  --accent: #ffbe0b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at top, #122746 0%, var(--bg) 50%);
+  color: var(--ink);
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  min-height: 100%;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.active {
+  display: block;
+}
+
+.menu-panel {
+  background: linear-gradient(160deg, #10203a, #192f4f);
+  border: 1px solid #2f4f7d;
+  border-radius: 12px;
+  padding: 1.2rem;
+}
+
+.menu-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+button {
+  border: 1px solid #4e6c99;
+  border-radius: 8px;
+  background: #233f67;
+  color: var(--ink);
+  padding: 0.65rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+button:hover {
+  cursor: pointer;
+  border-color: #8ba7d4;
+}
+
+.game-panel {
+  background: rgba(20, 36, 61, 0.9);
+  border: 1px solid #2e4f7c;
+  border-radius: 12px;
+  padding: 0.8rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+}
+
+.topbar div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.table-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #86613a;
+}
+
+#table,
+#overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.controls {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #162945;
+  border: 1px solid #314f79;
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.row label {
+  min-width: 90px;
+}
+
+.row input[type="range"] {
+  flex: 1;
+}
+
+.toggle-row {
+  justify-content: space-between;
+}
+
+.toggle-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
+.spin-row {
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.spin-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+#spinPicker {
+  border-radius: 999px;
+  border: 1px solid #50729f;
+  background: #10243f;
+  width: 94px;
+  height: 94px;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(100px, 1fr));
+  gap: 0.4rem;
+  align-content: center;
+  flex: 1;
+  margin-left: 0.6rem;
+}
+
+@media (max-width: 740px) {
+  .topbar {
+    font-size: 0.86rem;
+  }
+
+  .spin-row {
+    flex-direction: column;
+  }
+
+  .buttons {
+    margin-left: 0;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

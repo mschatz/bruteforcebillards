@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bruteforce Billiards</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section id="menu" class="panel menu-panel active">
+        <h1>Bruteforce Billiards</h1>
+        <p>Pick a mode to start.</p>
+        <div class="menu-actions">
+          <button id="start8">8-Ball (Simple)</button>
+          <button id="startSandbox">Free-Play Sandbox</button>
+          <button id="resumeSaved">Resume Saved Game</button>
+        </div>
+      </section>
+
+      <section id="game" class="panel game-panel">
+        <header class="topbar">
+          <div>
+            <strong id="modeLabel">Mode</strong>
+            <span id="statusLabel">Ready</span>
+          </div>
+          <div>
+            <strong id="turnLabel">Player 1</strong>
+            <span id="groupLabel">Open table</span>
+          </div>
+        </header>
+
+        <div class="table-wrap">
+          <canvas id="table" width="1000" height="500"></canvas>
+          <canvas id="overlay" width="1000" height="500"></canvas>
+        </div>
+
+        <section class="controls">
+          <div class="row">
+            <label for="power">Power</label>
+            <input id="power" type="range" min="0" max="100" value="30" />
+            <output id="powerOut">30%</output>
+          </div>
+          <div class="row">
+            <label for="randomness">Randomness</label>
+            <input id="randomness" type="range" min="0" max="100" value="10" />
+            <output id="randomOut">10%</output>
+          </div>
+          <div class="row toggle-row">
+            <label for="pathToggle">Target Path Guide</label>
+            <input id="pathToggle" type="checkbox" checked />
+          </div>
+          <div class="row spin-row">
+            <div class="spin-group">
+              <span>Spin / English</span>
+              <canvas id="spinPicker" width="110" height="110"></canvas>
+              <small id="spinOut">Center hit</small>
+            </div>
+            <div class="buttons">
+              <button id="shootBtn">Shoot</button>
+              <button id="undoBtn">Undo</button>
+              <button id="newRackBtn">New Rack</button>
+              <button id="backMenuBtn">Menu</button>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
