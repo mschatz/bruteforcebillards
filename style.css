@@ -1079,7 +1079,8 @@ button:hover {
 
 @media (max-width: 740px) {
   .menu-hero {
-    min-height: clamp(340px, 56vh, 460px);
+    height: clamp(220px, 72vw, 320px);
+    min-height: 0;
   }
 
   .hero-table {
