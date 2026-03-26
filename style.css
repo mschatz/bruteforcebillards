@@ -46,6 +46,412 @@ body {
   padding: 1.2rem;
 }
 
+.menu-panel h1,
+.menu-panel p {
+  margin-top: 0;
+}
+
+.menu-hero {
+  position: relative;
+  margin: 1rem 0 1.1rem;
+  min-height: 0;
+  border: 1px solid #2a4d7a;
+  border-radius: 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 190, 11, 0.18), transparent 28%),
+    radial-gradient(circle at 80% 25%, rgba(80, 220, 255, 0.16), transparent 30%),
+    linear-gradient(180deg, #0f223d, #152b49 55%, #10203a);
+}
+
+.hero-illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-table {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 24px;
+  height: 140px;
+  border-radius: 18px;
+  border: 12px solid #8c5b2d;
+  background: linear-gradient(135deg, #2cab57, #248d49);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.hero-pocket {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #0b0b0b;
+}
+
+.pocket-tl {
+  top: -11px;
+  left: -11px;
+}
+
+.pocket-tr {
+  top: -11px;
+  right: -11px;
+}
+
+.pocket-bl {
+  bottom: -11px;
+  left: -11px;
+}
+
+.pocket-br {
+  bottom: -11px;
+  right: -11px;
+}
+
+.hero-ball {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: inset -3px -3px 4px rgba(0, 0, 0, 0.35);
+}
+
+.hero-cue {
+  left: 22%;
+  top: 56%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #d7dde7);
+}
+
+.hero-eight {
+  left: 60%;
+  top: 36%;
+  background: radial-gradient(circle at 35% 30%, #505050, #111111);
+}
+
+.hero-one {
+  left: 72%;
+  top: 58%;
+  background: radial-gradient(circle at 35% 30%, #ffe17a, #d2a409);
+}
+
+.hero-trail {
+  position: absolute;
+  left: 24%;
+  top: 60%;
+  width: 52%;
+  border-top: 2px dashed rgba(113, 224, 255, 0.72);
+  transform: rotate(-12deg);
+  transform-origin: left center;
+}
+
+.hero-player {
+  position: absolute;
+  bottom: 118px;
+  width: 122px;
+  height: 148px;
+}
+
+.hero-guy {
+  left: 7%;
+}
+
+.hero-girl {
+  right: 7%;
+}
+
+.hero-head {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 40px;
+  height: 70px;
+  margin-left: -20px;
+  border-radius: 45% / 52%;
+  background: #f2c39e;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.hero-hair {
+  position: absolute;
+  top: -1px;
+  left: 2px;
+  right: 1px;
+  height: 26px;
+  border-radius: 18px 14px 12px 10px;
+  background: #25150f;
+}
+
+.hero-guy .hero-hair::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 18px;
+  width: 26px;
+  height: 20px;
+  border-radius: 0 14px 10px 12px;
+  background: #25150f;
+  transform: rotate(10deg);
+}
+
+.hero-guy .hero-hair::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 18px;
+  width: 2px;
+  height: 17px;
+  background: rgba(255, 214, 182, 0.45);
+  border-radius: 2px;
+  transform: rotate(12deg);
+}
+
+.hero-girl .hero-hair {
+  top: -4px;
+  left: 5px;
+  right: 7px;
+  height: 26px;
+  border-radius: 24px 24px 14px 14px;
+  background: #5d2f1f;
+}
+
+.hero-girl .hero-hair::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  right: -10px;
+  width: 18px;
+  height: 34px;
+  border-radius: 10px 12px 14px 10px;
+  background: linear-gradient(180deg, #6b3a27, #4e2418);
+  transform: rotate(14deg);
+  box-shadow: inset -2px -3px 3px rgba(0, 0, 0, 0.18);
+}
+
+.hero-glasses {
+  position: absolute;
+  top: 26px;
+  left: 4px;
+  width: 32px;
+  height: 14px;
+  border-top: 2px solid #162945;
+}
+
+.hero-glasses::before,
+.hero-glasses::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #162945;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #162945 0 2px, transparent 2.5px);
+}
+
+.hero-glasses::before {
+  left: 1px;
+}
+
+.hero-glasses::after {
+  right: 1px;
+}
+
+.hero-head::before,
+.hero-head::after {
+  content: "";
+  position: absolute;
+}
+
+.hero-head::before {
+  left: 19px;
+  top: 41px;
+  width: 4px;
+  height: 10px;
+  border-left: 1.5px solid rgba(126, 82, 58, 0.55);
+  border-bottom: 1.5px solid rgba(126, 82, 58, 0.25);
+  border-radius: 0 0 0 5px;
+}
+
+.hero-head::after {
+  left: 10px;
+  bottom: 12px;
+  width: 16px;
+  height: 8px;
+  border-bottom: 2px solid rgba(131, 74, 74, 0.82);
+  border-radius: 0 0 14px 14px;
+}
+
+.hero-body {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  width: 34px;
+  height: 72px;
+  margin-left: -17px;
+  border-radius: 10px 10px 7px 7px;
+  background: linear-gradient(180deg, #f06595, #ac3f68);
+}
+
+.hero-guy .hero-body {
+  background: linear-gradient(180deg, #7dd3fc, #3182ce);
+}
+
+.hero-guy .hero-body::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: -2px;
+  height: 28px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(180deg, #24364f, #182335);
+}
+
+.hero-skirt {
+  position: absolute;
+  top: 108px;
+  left: 50%;
+  width: 30px;
+  height: 26px;
+  margin-left: -15px;
+  background: linear-gradient(180deg, #8d2f5a, #631e3e);
+  clip-path: polygon(16% 0, 84% 0, 100% 100%, 0 100%);
+}
+
+.hero-legs {
+  position: absolute;
+  top: 128px;
+  left: 50%;
+  width: 18px;
+  height: 38px;
+  margin-left: -9px;
+}
+
+.hero-legs::before,
+.hero-legs::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 38px;
+  border-radius: 5px;
+  background: #efbc94;
+}
+
+.hero-legs::before {
+  left: 2px;
+}
+
+.hero-legs::after {
+  right: 2px;
+}
+
+.hero-guy .hero-legs::before,
+.hero-guy .hero-legs::after {
+  background:
+    linear-gradient(180deg, #1b2537 0 78%, #151515 78% 100%);
+}
+
+.hero-drink {
+  position: absolute;
+  z-index: 3;
+}
+
+.hero-pint {
+  top: 86px;
+  left: 34px;
+  width: 18px;
+  height: 30px;
+  border-radius: 3px 3px 6px 6px;
+  background: linear-gradient(180deg, #fff7de 0 20%, #40220f 20% 100%);
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  box-shadow: inset -2px 0 0 rgba(255, 255, 255, 0.18);
+  transform: rotate(-10deg);
+}
+
+.hero-pint::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: -7px;
+  width: 8px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-left: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.hero-bottle {
+  top: 82px;
+  right: -3px;
+  width: 12px;
+  height: 36px;
+  border-radius: 3px 3px 5px 5px;
+  background: linear-gradient(180deg, #b98f42 0 12%, #7d5418 12% 18%, #dbe9ff 18% 54%, #85561a 54% 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transform: rotate(12deg);
+  clip-path: polygon(34% 0, 66% 0, 72% 12%, 78% 22%, 78% 80%, 70% 100%, 30% 100%, 22% 80%, 22% 22%, 28% 12%);
+}
+
+.hero-bottle::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 4px;
+  width: 4px;
+  height: 8px;
+  border-radius: 2px 2px 1px 1px;
+  background: #7a4d12;
+}
+
+.hero-arm {
+  position: absolute;
+  top: 76px;
+  width: 32px;
+  height: 9px;
+  border-radius: 7px;
+  background: #efbc94;
+}
+
+.hero-arm-back {
+  left: 17px;
+  transform: rotate(14deg);
+}
+
+.hero-arm-front {
+  right: 15px;
+  transform: rotate(-18deg);
+}
+
+.hero-girl .hero-arm-back {
+  left: 11px;
+  transform: rotate(-18deg);
+}
+
+.hero-girl .hero-arm-front {
+  right: 17px;
+  transform: rotate(18deg);
+}
+
+.hero-cue-stick {
+  position: absolute;
+  top: 90px;
+  left: 48px;
+  width: 120px;
+  border-top: 3px solid #d7b37a;
+  transform: rotate(18deg);
+  transform-origin: left center;
+}
+
+.hero-girl .hero-cue-stick {
+  left: -34px;
+  transform: rotate(162deg);
+}
+
 .menu-actions {
   display: grid;
   grid-template-columns: 1fr;
@@ -67,25 +473,261 @@ button:hover {
   border-color: #8ba7d4;
 }
 
+@media (max-width: 900px) {
+  .app {
+    padding: 0.75rem;
+  }
+
+  .menu-panel {
+    padding: 1rem;
+  }
+
+  .menu-panel h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2.15rem;
+    line-height: 1.05;
+  }
+
+  .menu-panel p {
+    margin-bottom: 0.75rem;
+    font-size: 0.92rem;
+  }
+
+  .menu-hero {
+    min-height: 0;
+    margin: 0.75rem 0 0.85rem;
+  }
+
+  .hero-table {
+    left: 7%;
+    right: 7%;
+    bottom: 18px;
+    height: 110px;
+    border-width: 10px;
+  }
+
+  .hero-pocket {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pocket-tl,
+  .pocket-tr {
+    top: -9px;
+  }
+
+  .pocket-bl,
+  .pocket-br {
+    bottom: -9px;
+  }
+
+  .pocket-tl,
+  .pocket-bl {
+    left: -9px;
+  }
+
+  .pocket-tr,
+  .pocket-br {
+    right: -9px;
+  }
+
+  .hero-ball {
+    width: 13px;
+    height: 13px;
+  }
+
+  .hero-player {
+    bottom: 86px;
+    width: 82px;
+    height: 108px;
+  }
+
+  .hero-guy {
+    left: 2%;
+  }
+
+  .hero-girl {
+    right: 2%;
+  }
+
+  .hero-head {
+    top: 10px;
+    width: 24px;
+    height: 48px;
+    margin-left: -12px;
+  }
+
+  .hero-hair {
+    left: 2px;
+    right: 2px;
+    height: 17px;
+  }
+
+  .hero-girl .hero-hair {
+    left: 4px;
+    right: 6px;
+    height: 17px;
+  }
+
+  .hero-girl .hero-hair::after {
+    top: 10px;
+    right: -7px;
+    width: 11px;
+    height: 22px;
+  }
+
+  .hero-guy .hero-hair::before {
+    top: 1px;
+    left: 12px;
+    width: 18px;
+    height: 14px;
+  }
+
+  .hero-guy .hero-hair::after {
+    top: 2px;
+    left: 12px;
+    height: 12px;
+  }
+
+  .hero-glasses {
+    top: 14px;
+    left: 2px;
+    width: 22px;
+    height: 11px;
+  }
+
+  .hero-glasses::before,
+  .hero-glasses::after {
+    top: -2px;
+    width: 10px;
+    height: 10px;
+    background:
+      radial-gradient(circle at center, #162945 0 1.6px, transparent 2px);
+  }
+
+  .hero-head::before {
+    left: 11px;
+    top: 28px;
+    width: 3px;
+    height: 6px;
+  }
+
+  .hero-head::after {
+    left: 5px;
+    bottom: 8px;
+    width: 10px;
+    height: 5px;
+  }
+
+  .hero-body {
+    top: 46px;
+    width: 22px;
+    height: 44px;
+    margin-left: -11px;
+  }
+
+  .hero-guy .hero-body::after {
+    left: 5px;
+    right: 5px;
+    height: 18px;
+  }
+
+  .hero-skirt {
+    top: 82px;
+    width: 18px;
+    height: 14px;
+    margin-left: -9px;
+  }
+
+  .hero-legs {
+    top: 90px;
+    width: 10px;
+    height: 24px;
+    margin-left: -5px;
+  }
+
+  .hero-legs::before,
+  .hero-legs::after {
+    width: 3px;
+    height: 24px;
+  }
+
+  .hero-legs::before {
+    left: 2px;
+  }
+
+  .hero-legs::after {
+    right: 2px;
+  }
+
+  .hero-arm {
+    top: 56px;
+    width: 22px;
+    height: 8px;
+  }
+
+  .hero-arm-back {
+    left: 10px;
+  }
+
+  .hero-arm-front {
+    right: 10px;
+  }
+
+  .hero-girl .hero-arm-back {
+    left: 7px;
+  }
+
+  .hero-girl .hero-arm-front {
+    right: 7px;
+  }
+
+  .hero-cue-stick {
+    top: 68px;
+    left: 30px;
+    width: 78px;
+  }
+
+  .hero-girl .hero-cue-stick {
+    left: -25px;
+  }
+
+  .hero-pint {
+    top: 64px;
+    left: 24px;
+    width: 11px;
+    height: 19px;
+    border-width: 1px;
+  }
+
+  .hero-pint::after {
+    top: 5px;
+    right: -5px;
+    width: 5px;
+    height: 8px;
+    border-width: 1px;
+  }
+
+  .hero-bottle {
+    top: 61px;
+    right: -1px;
+    width: 8px;
+    height: 24px;
+  }
+
+  .hero-bottle::before {
+    top: -5px;
+    left: 2px;
+    width: 3px;
+    height: 6px;
+  }
+}
+
 .game-panel {
   background: rgba(20, 36, 61, 0.9);
   border: 1px solid #2e4f7c;
   border-radius: 12px;
   padding: 0.8rem;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.6rem;
-  font-size: 0.95rem;
-}
-
-.topbar div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
 }
 
 .table-wrap {
@@ -116,6 +758,48 @@ button:hover {
   gap: 0.7rem;
 }
 
+.table-status {
+  margin-bottom: 0.65rem;
+  justify-content: space-between;
+}
+
+.player-badges {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.player-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid #35547f;
+  border-radius: 10px;
+  background: rgba(33, 57, 92, 0.75);
+  opacity: 0.72;
+  flex: 1 1 0;
+}
+
+.player-badge svg {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+
+.player-badge div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+  font-size: 0.82rem;
+}
+
+.player-badge-active {
+  opacity: 1;
+  border-color: #8fb8ff;
+  box-shadow: 0 0 0 1px rgba(143, 184, 255, 0.3) inset;
+}
+
 .row {
   display: flex;
   align-items: center;
@@ -144,9 +828,10 @@ button:hover {
 }
 
 .spin-row {
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 220px;
   align-items: center;
-  gap: 1rem;
+  column-gap: 1rem;
 }
 
 .spin-group {
@@ -157,6 +842,12 @@ button:hover {
   text-align: center;
   width: auto;
   min-width: 180px;
+  justify-self: center;
+}
+
+.power-row {
+  width: min(100%, 360px);
+  margin-top: 0.2rem;
 }
 
 #spinPicker {
@@ -179,14 +870,105 @@ button:hover {
   flex: 0 0 220px;
   width: 220px;
   margin-left: 0;
+  justify-self: end;
 }
 
 @media (max-width: 740px) {
-  .topbar {
-    font-size: 0.86rem;
+  .menu-hero {
+    min-height: 220px;
+  }
+
+  .hero-table {
+    left: 7%;
+    right: 7%;
+    bottom: 16px;
+    height: 108px;
+  }
+
+  .hero-player {
+    bottom: 92px;
+    width: 104px;
+    height: 118px;
+  }
+
+  .hero-guy {
+    left: 0;
+  }
+
+  .hero-girl {
+    right: 0;
+  }
+
+  .hero-head {
+    width: 44px;
+    height: 50px;
+    margin-left: -22px;
+  }
+
+  .hero-body {
+    top: 46px;
+    width: 46px;
+    height: 58px;
+    margin-left: -23px;
+  }
+
+  .hero-guy .hero-body::after {
+    left: 7px;
+    right: 7px;
+    height: 22px;
+  }
+
+  .hero-skirt {
+    top: 92px;
+    width: 40px;
+    height: 22px;
+    margin-left: -20px;
+  }
+
+  .hero-legs {
+    top: 108px;
+    width: 26px;
+    height: 30px;
+    margin-left: -13px;
+  }
+
+  .hero-legs::before,
+  .hero-legs::after {
+    width: 7px;
+    height: 30px;
+  }
+
+  .hero-pint {
+    top: 64px;
+    left: 10px;
+    width: 14px;
+    height: 24px;
+  }
+
+  .hero-bottle {
+    top: 66px;
+    right: 10px;
+    width: 11px;
+    height: 28px;
+  }
+
+  .hero-arm {
+    top: 64px;
+    width: 34px;
+  }
+
+  .hero-cue-stick {
+    top: 76px;
+    left: 42px;
+    width: 88px;
+  }
+
+  .player-badges {
+    justify-content: stretch;
   }
 
   .spin-row {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
   }

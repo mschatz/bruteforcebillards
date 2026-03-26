@@ -28,17 +28,13 @@ const BALL_COLORS = {
   stripe15: "#ff6b6b",
 };
 
-const modeLabel = document.getElementById("modeLabel");
-const statusLabel = document.getElementById("statusLabel");
-const turnLabel = document.getElementById("turnLabel");
-const groupLabel = document.getElementById("groupLabel");
+const player1Badge = document.getElementById("player1Badge");
+const player2Badge = document.getElementById("player2Badge");
+const player1Meta = document.getElementById("player1Meta");
+const player2Meta = document.getElementById("player2Meta");
 const powerInput = document.getElementById("power");
 const powerOut = document.getElementById("powerOut");
-const randomInput = document.getElementById("randomness");
-const randomOut = document.getElementById("randomOut");
 const spinOut = document.getElementById("spinOut");
-const pathToggleInput = document.getElementById("pathToggle");
-
 const menuPanel = document.getElementById("menu");
 const gamePanel = document.getElementById("game");
 const tableCanvas = document.getElementById("table");
@@ -64,6 +60,7 @@ const state = {
   randomness: 0.1,
   showProjection: true,
   powerPct: DEFAULT_POWER_PCT,
+  lightSpeedMode: false,
   shooting: false,
   shotContext: null,
   history: [],
@@ -113,6 +110,10 @@ function ballSpeed(ball) {
 
 function triggerFlash(text, tone) {
   state.flash = { text, time: 0.9, tone };
+}
+
+function isLightSpeedPower() {
+  return state.powerPct >= 100;
 }
 
 function getBallById(id) {
@@ -211,19 +212,21 @@ function playerGroupLabel(idx) {
   return g === "solid" ? "Solids" : "Stripes";
 }
 
+function remainingBallsText(idx) {
+  if (state.mode !== "8ball") return "Open table";
+  const group = state.groups[idx];
+  if (!group) return "Open table";
+  const remaining = activeBalls().filter((b) => b.kind === group).length;
+  return `${remaining} ${group} left`;
+}
+
 function updateLabels() {
-  modeLabel.textContent = state.mode === "8ball" ? "8-Ball (Simple)" : "Free-Play Sandbox";
-  statusLabel.textContent = state.gameOver
-    ? `Game over: ${state.winner}`
-    : state.message;
-  turnLabel.textContent = currentPlayerName();
-  groupLabel.textContent =
-    state.mode === "8ball"
-      ? `P1 ${playerGroupLabel(0)} | P2 ${playerGroupLabel(1)}`
-      : "No teams in sandbox";
+  player1Badge.classList.toggle("player-badge-active", state.turn === 0);
+  player2Badge.classList.toggle("player-badge-active", state.turn === 1);
+  player1Meta.textContent = remainingBallsText(0);
+  player2Meta.textContent = remainingBallsText(1);
 
   powerOut.textContent = `${state.powerPct}%`;
-  randomOut.textContent = `${Math.round(state.randomness * 100)}%`;
 
   const sx = state.spinPick.x.toFixed(2);
   const sy = (-state.spinPick.y).toFixed(2);
@@ -356,9 +359,11 @@ function simulatePreviewShot(cue, target) {
     previewCue.x += previewCue.vx * PHYS.dt;
     previewCue.y += previewCue.vy * PHYS.dt;
 
-    const drag = 1 - Math.abs(state.spinPick.y) * 0.001;
-    previewCue.vx *= PHYS.friction * drag;
-    previewCue.vy *= PHYS.friction * drag;
+    if (!isLightSpeedPower()) {
+      const drag = 1 - Math.abs(state.spinPick.y) * 0.001;
+      previewCue.vx *= PHYS.friction * drag;
+      previewCue.vy *= PHYS.friction * drag;
+    }
 
     if (previewCue.x - previewCue.r < p.left) {
       previewCue.x = p.left + previewCue.r;
@@ -444,6 +449,7 @@ function beginShot() {
   cue.vx = velocity.x;
   cue.vy = velocity.y;
   state.cueSpin = { x: state.spinPick.x, y: state.spinPick.y };
+  state.lightSpeedMode = isLightSpeedPower();
   state.shooting = true;
   state.shotContext = {
     pocketed: [],
@@ -494,9 +500,11 @@ function step(dt) {
       b.x += b.vx * h;
       b.y += b.vy * h;
 
-      const drag = b.id === "cue" ? 1 - Math.abs(state.cueSpin.y) * 0.001 : 1;
-      b.vx *= PHYS.friction * drag;
-      b.vy *= PHYS.friction * drag;
+      if (!(b.id === "cue" && state.lightSpeedMode)) {
+        const drag = b.id === "cue" ? 1 - Math.abs(state.cueSpin.y) * 0.001 : 1;
+        b.vx *= PHYS.friction * drag;
+        b.vy *= PHYS.friction * drag;
+      }
 
       if (Math.abs(b.vx) < PHYS.minSpeed) b.vx = 0;
       if (Math.abs(b.vy) < PHYS.minSpeed) b.vy = 0;
@@ -623,6 +631,7 @@ function evaluateShotEnd() {
   if (!ctx) return;
   state.spinPick = { x: 0, y: 0 };
   state.cueSpin = { x: 0, y: 0 };
+  state.lightSpeedMode = false;
   state.powerPct = DEFAULT_POWER_PCT;
   powerInput.value = String(DEFAULT_POWER_PCT);
 
@@ -939,8 +948,6 @@ function undoShot() {
   state.message = "Undid last shot.";
   state.shooting = false;
   state.shotContext = null;
-  randomInput.value = String(Math.round(state.randomness * 100));
-  pathToggleInput.checked = state.showProjection;
   powerInput.value = String(state.powerPct);
   saveState();
   updateLabels();
@@ -990,8 +997,6 @@ function loadState() {
     state.message = save.message || "Loaded saved game.";
     state.shooting = false;
     state.shotContext = null;
-    randomInput.value = String(Math.round(state.randomness * 100));
-    pathToggleInput.checked = state.showProjection;
     powerInput.value = String(state.powerPct);
     updateLabels();
     showGame();
@@ -1081,15 +1086,6 @@ powerInput.addEventListener("input", () => {
   state.powerPct = Number(powerInput.value);
   updateLabels();
 });
-randomInput.addEventListener("input", () => {
-  state.randomness = Number(randomInput.value) / 100;
-  updateLabels();
-});
-pathToggleInput.addEventListener("change", () => {
-  state.showProjection = !!pathToggleInput.checked;
-  saveState();
-});
-
 overlayCanvas.addEventListener("pointerdown", (evt) => {
   evt.preventDefault();
   handleTableTap(evt);

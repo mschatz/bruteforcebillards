@@ -10,51 +10,192 @@
     <main class="app">
       <section id="menu" class="panel menu-panel active">
         <h1>Bruteforce Billiards</h1>
-        <p>Pick a mode to start.</p>
+        <div class="menu-hero" aria-hidden="true">
+          <svg class="hero-illustration" viewBox="0 0 960 300" role="img" aria-label="A cartoon nerdy guy and nerdy girl playing pool">
+            <defs>
+              <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2a3344" />
+                <stop offset="55%" stop-color="#173354" />
+                <stop offset="100%" stop-color="#122745" />
+              </linearGradient>
+              <linearGradient id="felt" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#31b55c" />
+                <stop offset="100%" stop-color="#27944a" />
+              </linearGradient>
+              <linearGradient id="rail" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#9b6a34" />
+                <stop offset="100%" stop-color="#a87439" />
+              </linearGradient>
+              <radialGradient id="cueBall" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="100%" stop-color="#cfd7e2" />
+              </radialGradient>
+              <radialGradient id="oneBall" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ffe780" />
+                <stop offset="100%" stop-color="#d8aa12" />
+              </radialGradient>
+              <radialGradient id="eightBall" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#505050" />
+                <stop offset="100%" stop-color="#111111" />
+              </radialGradient>
+            </defs>
+
+            <rect width="960" height="300" rx="18" fill="url(#heroBg)" />
+            <circle cx="155" cy="48" r="95" fill="rgba(255,190,11,0.12)" />
+
+            <g transform="translate(110 112)">
+              <rect x="0" y="0" width="740" height="150" rx="14" fill="url(#rail)" />
+              <rect x="18" y="18" width="704" height="114" rx="10" fill="url(#felt)" />
+              <circle cx="10" cy="10" r="10" fill="#0b0b0b" />
+              <circle cx="730" cy="10" r="10" fill="#0b0b0b" />
+              <circle cx="10" cy="140" r="10" fill="#0b0b0b" />
+              <circle cx="730" cy="140" r="10" fill="#0b0b0b" />
+
+              <path d="M170 96 L546 17" stroke="#5fdcff" stroke-width="3" stroke-dasharray="8 6" fill="none" opacity="0.8" />
+              <circle cx="170" cy="96" r="12" fill="url(#cueBall)" />
+              <circle cx="485" cy="67" r="12" fill="url(#eightBall)" />
+              <circle cx="573" cy="98" r="12" fill="url(#oneBall)" />
+            </g>
+
+            <g transform="translate(96 36)">
+              <line x1="76" y1="118" x2="244" y2="170" stroke="#a97a3f" stroke-width="5" />
+              <rect x="94" y="101" width="30" height="82" rx="12" fill="#4aa9f7" />
+              <path d="M99 101 L109 113 L119 101" fill="#d9efff" opacity="0.95" />
+              <path d="M101 101 L109 110 L107 118 L101 113 Z" fill="#7cc6fb" />
+              <path d="M117 101 L109 110 L111 118 L117 113 Z" fill="#7cc6fb" />
+              <rect x="107.4" y="113" width="3.2" height="40" rx="1.6" fill="#d9efff" opacity="0.95" />
+              <circle cx="109" cy="124" r="1.4" fill="#4c87bf" />
+              <circle cx="109" cy="137" r="1.4" fill="#4c87bf" />
+              <circle cx="109" cy="149" r="1.4" fill="#4c87bf" />
+              <path d="M99 149 L119 149 L116 159 L102 159 Z" fill="#4aa9f7" />
+              <rect x="98" y="160" width="22" height="3" rx="1.5" fill="#1d1d1d" />
+              <rect x="107" y="159.4" width="4" height="4.2" rx="0.8" fill="none" stroke="#c4ab6a" stroke-width="1" />
+              <rect x="100" y="163" width="18" height="28" rx="6" fill="#1d3252" />
+              <rect x="100" y="191" width="6" height="50" rx="4" fill="#1d3252" />
+              <rect x="112" y="191" width="6" height="50" rx="4" fill="#1d3252" />
+              <path d="M96 241 Q102 239 108 241 L111 244 Q104 246 97 244 Z" fill="#ffffff" stroke="#c7d2df" stroke-width="1" />
+              <path d="M108 241 Q114 239 120 241 L123 244 Q116 246 109 244 Z" fill="#ffffff" stroke="#c7d2df" stroke-width="1" />
+              <ellipse cx="109" cy="76" rx="24" ry="33" fill="#f2c39e" />
+              <rect x="104" y="98" width="10" height="10" rx="4" fill="#f2c39e" />
+              <path d="M87 58 C90 38 126 34 143 54 C142 67 135 71 129 71 C126 61 116 55 106 55 C96 55 89 59 87 58 Z" fill="#2d1a12" />
+              <path d="M108 44 C118 43 128 46 132 54" stroke="#7a5c46" stroke-width="2" opacity="0.4" />
+              <circle cx="99" cy="77" r="9" fill="none" stroke="#17345a" stroke-width="3" />
+              <circle cx="121" cy="77" r="9" fill="none" stroke="#17345a" stroke-width="3" />
+              <line x1="108" y1="77" x2="112" y2="77" stroke="#17345a" stroke-width="3" />
+              <path d="M90 75 L82 72" stroke="#17345a" stroke-width="3" stroke-linecap="round" fill="none" />
+              <path d="M130 75 L138 72" stroke="#17345a" stroke-width="3" stroke-linecap="round" fill="none" />
+              <circle cx="99" cy="77" r="2.2" fill="#17345a" />
+              <circle cx="121" cy="77" r="2.2" fill="#17345a" />
+              <path d="M109 87 C111 91 112 94 111 98" stroke="#9e7154" stroke-width="1.5" fill="none" />
+              <path d="M102 103 C106 108 115 108 119 103" stroke="#8f5656" stroke-width="2" fill="none" stroke-linecap="round" />
+              <line x1="84" y1="124" x2="101" y2="128" stroke="#efbc94" stroke-width="11" stroke-linecap="round" />
+              <line x1="121" y1="126" x2="149" y2="118" stroke="#efbc94" stroke-width="11" stroke-linecap="round" />
+              <g transform="translate(145 108) rotate(-8)">
+                <rect x="0" y="0" width="14" height="28" rx="3" fill="#fff7de" stroke="rgba(255,255,255,0.5)" />
+                <rect x="1.5" y="7" width="11" height="19" rx="2" fill="#4a2712" />
+                <path d="M14 8 C19 8 19 17 14 17" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2" />
+              </g>
+            </g>
+
+            <g transform="translate(728 36)">
+              <line x1="166" y1="118" x2="4" y2="170" stroke="#a97a3f" stroke-width="5" />
+              <rect x="112" y="104" width="28" height="84" rx="12" fill="#e05e98" />
+              <path d="M114 180 L138 180 L144 198 L108 198 Z" fill="#7a2f59" />
+              <rect x="118" y="196" width="6" height="48" rx="4" fill="#efbc94" />
+              <rect x="129" y="196" width="6" height="48" rx="4" fill="#efbc94" />
+              <path d="M118 244 L124 244 L126 249 L120 249 Z" fill="#d74c95" />
+              <path d="M129 244 L135 244 L137 249 L131 249 Z" fill="#d74c95" />
+              <rect x="124" y="244" width="1.5" height="6" rx="0.7" fill="#7a2f59" />
+              <rect x="135" y="244" width="1.5" height="6" rx="0.7" fill="#7a2f59" />
+              <ellipse cx="129" cy="76" rx="24" ry="33" fill="#f2c39e" />
+              <rect x="124" y="97" width="10" height="10" rx="4" fill="#f2c39e" />
+              <path d="M105 54 C112 36 148 40 157 58 C151 78 148 89 133 90 C140 73 136 57 121 53 C115 51 110 51 105 54 Z" fill="#743b23" />
+              <path d="M151 60 C165 58 169 84 151 94 C147 84 147 69 151 60 Z" fill="#6a341f" />
+              <circle cx="119" cy="77" r="9" fill="none" stroke="#17345a" stroke-width="3" />
+              <circle cx="141" cy="77" r="9" fill="none" stroke="#17345a" stroke-width="3" />
+              <line x1="128" y1="77" x2="132" y2="77" stroke="#17345a" stroke-width="3" />
+              <path d="M110 75 L102 71" stroke="#17345a" stroke-width="3" stroke-linecap="round" fill="none" />
+              <path d="M150 75 L156 71" stroke="#17345a" stroke-width="3" stroke-linecap="round" fill="none" />
+              <circle cx="119" cy="77" r="2.2" fill="#17345a" />
+              <circle cx="141" cy="77" r="2.2" fill="#17345a" />
+              <path d="M129 87 C131 91 132 94 131 98" stroke="#9e7154" stroke-width="1.5" fill="none" />
+              <path d="M122 103 C126 108 135 108 139 103" stroke="#8f5656" stroke-width="2" fill="none" stroke-linecap="round" />
+              <line x1="74" y1="128" x2="111" y2="116" stroke="#efbc94" stroke-width="11" stroke-linecap="round" />
+              <line x1="140" y1="118" x2="174" y2="130" stroke="#efbc94" stroke-width="11" stroke-linecap="round" />
+              <g transform="translate(175 116) rotate(10)">
+                <path d="M7 0 L11 0 L12 8 L14 12 L14 32 L4 32 L4 12 L6 8 Z" fill="#8b5c1f" stroke="rgba(255,255,255,0.35)" />
+                <rect x="4.8" y="10" width="8.4" height="13" rx="2" fill="#d9e9ff" />
+                <rect x="4.8" y="23" width="8.4" height="8" rx="2" fill="#96631b" />
+                <rect x="7" y="-5" width="4" height="6" rx="1.5" fill="#7a4d12" />
+              </g>
+            </g>
+          </svg>
+        </div>
         <div class="menu-actions">
-          <button id="start8">8-Ball (Simple)</button>
+          <button id="start8">8-Ball</button>
           <button id="startSandbox">Free-Play Sandbox</button>
           <button id="resumeSaved">Resume Saved Game</button>
         </div>
       </section>
 
       <section id="game" class="panel game-panel">
-        <header class="topbar">
-          <div>
-            <strong id="modeLabel">Mode</strong>
-            <span id="statusLabel">Ready</span>
+        <div class="player-badges table-status">
+          <div class="player-badge player-badge-active" id="player1Badge">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <ellipse cx="32" cy="18" rx="12" ry="15" fill="#f2c39e" />
+              <path d="M20 11 C23 3 40 4 45 12 C43 20 41 25 35 24 C37 17 35 12 29 10 C26 9 23 9 20 11 Z" fill="#743b23" />
+              <path d="M42 13 C49 13 50 24 43 28 C41 23 41 17 42 13 Z" fill="#6a341f" />
+              <circle cx="27" cy="18" r="4.5" fill="none" stroke="#17345a" stroke-width="2" />
+              <circle cx="37" cy="18" r="4.5" fill="none" stroke="#17345a" stroke-width="2" />
+              <line x1="31" y1="18" x2="33" y2="18" stroke="#17345a" stroke-width="2" />
+              <circle cx="27" cy="18" r="1.2" fill="#17345a" />
+              <circle cx="37" cy="18" r="1.2" fill="#17345a" />
+              <path d="M32 23 C33 25 33 27 32 29" stroke="#9e7154" stroke-width="1.2" fill="none" />
+              <path d="M28 31 C30 33 34 33 36 31" stroke="#8f5656" stroke-width="1.6" fill="none" stroke-linecap="round" />
+              <rect x="23" y="31" width="18" height="24" rx="7" fill="#e05e98" />
+              <path d="M24 52 L40 52 L43 58 L21 58 Z" fill="#7a2f59" />
+            </svg>
+            <div>
+              <strong>Player 1</strong>
+              <span id="player1Meta">Open table</span>
+            </div>
           </div>
-          <div>
-            <strong id="turnLabel">Player 1</strong>
-            <span id="groupLabel">Open table</span>
+          <div class="player-badge" id="player2Badge">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <ellipse cx="32" cy="18" rx="12" ry="15" fill="#f2c39e" />
+              <path d="M21 10 C24 2 42 3 47 11 C46 17 42 22 37 22 C35 14 30 10 24 10 Z" fill="#2d1a12" />
+              <circle cx="27" cy="18" r="4.5" fill="none" stroke="#17345a" stroke-width="2" />
+              <circle cx="37" cy="18" r="4.5" fill="none" stroke="#17345a" stroke-width="2" />
+              <line x1="31" y1="18" x2="33" y2="18" stroke="#17345a" stroke-width="2" />
+              <circle cx="27" cy="18" r="1.2" fill="#17345a" />
+              <circle cx="37" cy="18" r="1.2" fill="#17345a" />
+              <path d="M32 23 C33 25 33 27 32 29" stroke="#9e7154" stroke-width="1.2" fill="none" />
+              <path d="M28 31 C30 33 34 33 36 31" stroke="#8f5656" stroke-width="1.6" fill="none" stroke-linecap="round" />
+              <rect x="23" y="31" width="18" height="24" rx="7" fill="#4aa9f7" />
+              <path d="M24 33 L32 40 L40 33" fill="#d9efff" opacity="0.95" />
+            </svg>
+            <div>
+              <strong>Player 2</strong>
+              <span id="player2Meta">Open table</span>
+            </div>
           </div>
-        </header>
-
+        </div>
         <div class="table-wrap">
           <canvas id="table" width="1000" height="500"></canvas>
           <canvas id="overlay" width="1000" height="500"></canvas>
         </div>
 
         <section class="controls">
-          <div class="row">
-            <label for="power">Power</label>
-            <input id="power" type="range" min="0" max="100" value="30" />
-            <output id="powerOut">30%</output>
-          </div>
-          <div class="row">
-            <label for="randomness">Randomness</label>
-            <input id="randomness" type="range" min="0" max="100" value="10" />
-            <output id="randomOut">10%</output>
-          </div>
-          <div class="row toggle-row">
-            <label for="pathToggle">Target Path Guide</label>
-            <input id="pathToggle" type="checkbox" checked />
-          </div>
           <div class="row spin-row">
             <div class="spin-group">
               <span>Spin / English</span>
               <canvas id="spinPicker" width="110" height="110"></canvas>
               <small id="spinOut">Center hit</small>
+              <div class="row power-row">
+                <label for="power">Power</label>
+                <input id="power" type="range" min="0" max="100" value="30" />
+                <output id="powerOut">30%</output>
+              </div>
             </div>
             <div class="buttons">
               <button id="shootBtn">Shoot</button>
