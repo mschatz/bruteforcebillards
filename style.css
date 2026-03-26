@@ -138,14 +138,19 @@ button:hover {
 }
 
 .spin-row {
-  justify-content: space-between;
-  align-items: stretch;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
 
 .spin-group {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  align-items: center;
+  text-align: center;
+  width: auto;
+  min-width: 180px;
 }
 
 #spinPicker {
@@ -161,8 +166,9 @@ button:hover {
   grid-template-columns: repeat(2, minmax(100px, 1fr));
   gap: 0.4rem;
   align-content: center;
-  flex: 1;
-  margin-left: 0.6rem;
+  flex: 0 0 220px;
+  width: 220px;
+  margin-left: 0;
 }
 
 @media (max-width: 740px) {
@@ -172,10 +178,17 @@ button:hover {
 
   .spin-row {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .buttons {
-    margin-left: 0;
+    flex: 1 1 auto;
+    width: 100%;
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .spin-group {
+    width: 100%;
+    min-width: 0;
   }
 }

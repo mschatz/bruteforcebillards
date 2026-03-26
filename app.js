@@ -1,5 +1,6 @@
 const STORAGE_KEY = "bruteforce-billiards-save-v1";
-const TABLE = { width: 1000, height: 500, rail: 34, pocketR: 24, ballR: 11 };
+const DEFAULT_POWER_PCT = 30;
+const TABLE = { width: 1000, height: 500, rail: 34, pocketR: 24, ballR: 13 };
 const PHYS = {
   dt: 1 / 120,
   friction: 0.992,
@@ -62,11 +63,12 @@ const state = {
   cueSpin: { x: 0, y: 0 },
   randomness: 0.1,
   showProjection: true,
-  powerPct: 30,
+  powerPct: DEFAULT_POWER_PCT,
   shooting: false,
   shotContext: null,
   history: [],
   warp: { intensity: 0, time: 0 },
+  flash: { text: "", time: 0, tone: "good" },
   message: "Tap a target ball, adjust power, then shoot.",
 };
 
@@ -107,6 +109,10 @@ function clamp(value, min, max) {
 
 function ballSpeed(ball) {
   return Math.hypot(ball.vx, ball.vy);
+}
+
+function triggerFlash(text, tone) {
+  state.flash = { text, time: 0.9, tone };
 }
 
 function getBallById(id) {
@@ -216,9 +222,7 @@ function updateLabels() {
       ? `P1 ${playerGroupLabel(0)} | P2 ${playerGroupLabel(1)}`
       : "No teams in sandbox";
 
-  const speed = mapPowerToSpeed(state.powerPct);
-  const cRatio = speed / PHYS.cSpeed;
-  powerOut.textContent = `${state.powerPct}% (${cRatio.toFixed(2)}c)`;
+  powerOut.textContent = `${state.powerPct}%`;
   randomOut.textContent = `${Math.round(state.randomness * 100)}%`;
 
   const sx = state.spinPick.x.toFixed(2);
@@ -528,6 +532,13 @@ function step(dt) {
     if (state.warp.time <= 0) state.warp.intensity = 0;
   }
 
+  if (state.flash.time > 0) {
+    state.flash.time = Math.max(0, state.flash.time - dt);
+    if (state.flash.time === 0) {
+      state.flash.text = "";
+    }
+  }
+
   if (state.shooting && !anyBallMoving()) {
     state.shooting = false;
     evaluateShotEnd();
@@ -596,6 +607,11 @@ function handlePockets() {
         b.vx = 0;
         b.vy = 0;
         if (state.shotContext) state.shotContext.pocketed.push(b.id);
+        if (b.id === "cue") {
+          triggerFlash("Scratch", "bad");
+        } else {
+          triggerFlash("Nice shot", "good");
+        }
         break;
       }
     }
@@ -607,6 +623,8 @@ function evaluateShotEnd() {
   if (!ctx) return;
   state.spinPick = { x: 0, y: 0 };
   state.cueSpin = { x: 0, y: 0 };
+  state.powerPct = DEFAULT_POWER_PCT;
+  powerInput.value = String(DEFAULT_POWER_PCT);
 
   const cuePocketed = ctx.pocketed.includes("cue");
 
@@ -756,6 +774,28 @@ function drawOverlay() {
     const alpha = 0.15 + state.warp.intensity * 0.25;
     overlayCtx.fillStyle = `rgba(255,190,11,${alpha})`;
     overlayCtx.fillRect(0, 0, TABLE.width, TABLE.height);
+  }
+
+  if (state.flash.time > 0 && state.flash.text) {
+    const alpha = Math.min(1, state.flash.time / 0.9);
+    overlayCtx.save();
+    overlayCtx.fillStyle =
+      state.flash.tone === "bad"
+        ? `rgba(255, 99, 99, ${0.18 * alpha})`
+        : `rgba(255, 190, 11, ${0.18 * alpha})`;
+    overlayCtx.fillRect(0, 0, TABLE.width, TABLE.height);
+    overlayCtx.font = "bold 42px Trebuchet MS, sans-serif";
+    overlayCtx.textAlign = "center";
+    overlayCtx.textBaseline = "middle";
+    overlayCtx.lineWidth = 6;
+    overlayCtx.strokeStyle = `rgba(10, 20, 32, ${0.7 * alpha})`;
+    overlayCtx.fillStyle =
+      state.flash.tone === "bad"
+        ? `rgba(255, 235, 235, ${alpha})`
+        : `rgba(255, 248, 214, ${alpha})`;
+    overlayCtx.strokeText(state.flash.text, TABLE.width / 2, TABLE.height / 2);
+    overlayCtx.fillText(state.flash.text, TABLE.width / 2, TABLE.height / 2);
+    overlayCtx.restore();
   }
 
   const cue = getBallById("cue");
