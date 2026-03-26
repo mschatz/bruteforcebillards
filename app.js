@@ -275,6 +275,56 @@ function estimateStoppingDistance(initialSpeed) {
   return Math.max(0, idealDistance);
 }
 
+function simulateBallPath(ball, maxSteps, sampleEvery) {
+  const p = playRect();
+  const sim = { ...ball };
+  const points = [{ x: sim.x, y: sim.y }];
+  let pocketed = false;
+
+  for (let i = 0; i < maxSteps; i++) {
+    sim.x += sim.vx * PHYS.dt;
+    sim.y += sim.vy * PHYS.dt;
+
+    sim.vx *= PHYS.friction;
+    sim.vy *= PHYS.friction;
+
+    if (Math.abs(sim.vx) < PHYS.minSpeed) sim.vx = 0;
+    if (Math.abs(sim.vy) < PHYS.minSpeed) sim.vy = 0;
+
+    if (sim.x - sim.r < p.left) {
+      sim.x = p.left + sim.r;
+      sim.vx = Math.abs(sim.vx) * PHYS.restitution;
+    }
+    if (sim.x + sim.r > p.right) {
+      sim.x = p.right - sim.r;
+      sim.vx = -Math.abs(sim.vx) * PHYS.restitution;
+    }
+    if (sim.y - sim.r < p.top) {
+      sim.y = p.top + sim.r;
+      sim.vy = Math.abs(sim.vy) * PHYS.restitution;
+    }
+    if (sim.y + sim.r > p.bottom) {
+      sim.y = p.bottom - sim.r;
+      sim.vy = -Math.abs(sim.vy) * PHYS.restitution;
+    }
+
+    if (i % sampleEvery === 0) {
+      points.push({ x: sim.x, y: sim.y });
+    }
+
+    for (const pocket of pockets()) {
+      if (Math.hypot(sim.x - pocket.x, sim.y - pocket.y) < TABLE.pocketR) {
+        points.push({ x: pocket.x, y: pocket.y });
+        pocketed = true;
+        break;
+      }
+    }
+    if (pocketed || (sim.vx === 0 && sim.vy === 0)) break;
+  }
+
+  return { points, pocketed };
+}
+
 function simulatePreviewShot(cue, target) {
   const p = playRect();
   const previewCue = {
@@ -332,31 +382,27 @@ function simulatePreviewShot(cue, target) {
     const dist = Math.hypot(dx, dy);
     if (dist <= cue.r + target.r) {
       const normal = normalize(dx, dy);
-      const tangent = { x: -normal.y, y: normal.x };
       const incomingSpeed = Math.hypot(previewCue.vx, previewCue.vy);
       const incomingDir = incomingSpeed > 0
         ? { x: previewCue.vx / incomingSpeed, y: previewCue.vy / incomingSpeed }
         : normalize(target.x - cue.x, target.y - cue.y);
-      const cutAmount = Math.abs(incomingDir.x * tangent.x + incomingDir.y * tangent.y);
-      const fullness = clamp(incomingDir.x * normal.x + incomingDir.y * normal.y, 0.1, 1);
-      const throwAmount =
-        state.spinPick.x * cutAmount * (0.45 + 0.2 * clamp(incomingSpeed / PHYS.cSpeed, 0, 1));
-      const followBias = state.spinPick.y * cutAmount * 0.08;
-      const targetDir = normalize(
-        normal.x + tangent.x * (throwAmount + followBias),
-        normal.y + tangent.y * (throwAmount + followBias)
+      const normalSpeed = Math.max(
+        0,
+        incomingDir.x * normal.x + incomingDir.y * normal.y
+      ) * incomingSpeed;
+      const targetSpeed = ((1 + PHYS.restitution) * normalSpeed) / 2;
+      const targetVx = normal.x * targetSpeed;
+      const targetVy = normal.y * targetSpeed;
+      const targetPath = simulateBallPath(
+        { x: target.x, y: target.y, vx: targetVx, vy: targetVy, r: target.r },
+        1200,
+        4
       );
-      const transferredSpeed =
-        incomingSpeed *
-        fullness *
-        PHYS.restitution *
-        (1 + Math.max(0, state.spinPick.y) * 0.08);
 
       contact = {
         x: previewCue.x,
         y: previewCue.y,
-        targetDir,
-        targetLength: estimateStoppingDistance(transferredSpeed),
+        targetPoints: targetPath.points,
       };
       break;
     }
@@ -746,15 +792,17 @@ function drawOverlay() {
     overlayCtx.setLineDash([]);
 
     if (preview.contact) {
-      const endX = target.x + preview.contact.targetDir.x * preview.contact.targetLength;
-      const endY = target.y + preview.contact.targetDir.y * preview.contact.targetLength;
-
       overlayCtx.strokeStyle = "rgba(80,220,255,0.9)";
       overlayCtx.lineWidth = 2;
       overlayCtx.setLineDash([6, 4]);
       overlayCtx.beginPath();
-      overlayCtx.moveTo(target.x, target.y);
-      overlayCtx.lineTo(endX, endY);
+      overlayCtx.moveTo(preview.contact.targetPoints[0].x, preview.contact.targetPoints[0].y);
+      for (let i = 1; i < preview.contact.targetPoints.length; i++) {
+        overlayCtx.lineTo(
+          preview.contact.targetPoints[i].x,
+          preview.contact.targetPoints[i].y
+        );
+      }
       overlayCtx.stroke();
       overlayCtx.setLineDash([]);
 
