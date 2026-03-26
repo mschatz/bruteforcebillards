@@ -724,6 +724,7 @@ button:hover {
 }
 
 .game-panel {
+  position: relative;
   background: rgba(20, 36, 61, 0.9);
   border: 1px solid #2e4f7c;
   border-radius: 12px;
@@ -873,6 +874,201 @@ button:hover {
   justify-self: end;
 }
 
+.celebration-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(8, 17, 31, 0.88);
+  border-radius: 12px;
+  z-index: 20;
+}
+
+.celebration-overlay.active {
+  display: flex;
+}
+
+.celebration-scene {
+  width: min(100%, 760px);
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.celebration-people,
+.cele-ponies {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.celebration-overlay.stage-1 .celebration-people,
+.celebration-overlay.stage-2 .celebration-people,
+.celebration-overlay.stage-3 .celebration-people,
+.celebration-overlay.stage-2 .cele-ponies,
+.celebration-overlay.stage-3 .cele-ponies,
+.celebration-overlay.stage-3 .celebration-finale {
+  opacity: 1;
+}
+
+.cele-people-svg {
+  width: min(100%, 420px);
+  height: auto;
+  overflow: visible;
+}
+
+.cele-ponies {
+  position: relative;
+  min-height: 140px;
+}
+
+.pony {
+  position: relative;
+  width: 150px;
+  height: 110px;
+  opacity: 0;
+}
+
+.celebration-overlay.stage-2 .pony,
+.celebration-overlay.stage-3 .pony {
+  opacity: 1;
+}
+
+.pony-left {
+  transform: translateX(-140px);
+  animation: pony-in-left 1.2s ease forwards;
+}
+
+.pony-right {
+  transform: translateX(140px) scaleX(-1);
+  animation: pony-in-right 1.2s ease forwards;
+}
+
+.celebration-overlay:not(.stage-2):not(.stage-3) .pony-left,
+.celebration-overlay:not(.stage-2):not(.stage-3) .pony-right {
+  animation: none;
+}
+
+.pony-body,
+.pony-head,
+.pony-legs span,
+.pony-tail,
+.pony-mane {
+  position: absolute;
+}
+
+.pony-body {
+  left: 24px;
+  top: 32px;
+  width: 72px;
+  height: 40px;
+  border-radius: 30px 28px 22px 24px;
+  background: #ff7eb6;
+}
+
+.pony-head {
+  left: 84px;
+  top: 20px;
+  width: 34px;
+  height: 30px;
+  border-radius: 45% 45% 40% 40%;
+  background: #ff90c3;
+}
+
+.pony-head::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: -10px;
+  width: 9px;
+  height: 16px;
+  background: #ffb4d8;
+  clip-path: polygon(40% 0, 100% 100%, 0 100%);
+}
+
+.pony-mane {
+  left: 80px;
+  top: 22px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffd6f0;
+}
+
+.pony-tail {
+  left: 12px;
+  top: 38px;
+  width: 24px;
+  height: 14px;
+  border-radius: 12px 0 12px 12px;
+  background: #ffd6f0;
+}
+
+.pony-legs {
+  position: absolute;
+  left: 34px;
+  top: 68px;
+  width: 52px;
+  height: 36px;
+}
+
+.pony-legs span {
+  bottom: 0;
+  width: 8px;
+  height: 34px;
+  border-radius: 999px;
+  background: #ff90c3;
+  animation: pony-step 0.55s ease-in-out infinite alternate;
+}
+
+.pony-legs span:nth-child(1) { left: 0; }
+.pony-legs span:nth-child(2) { left: 14px; animation-delay: 0.14s; }
+.pony-legs span:nth-child(3) { left: 28px; animation-delay: 0.28s; }
+.pony-legs span:nth-child(4) { left: 42px; animation-delay: 0.42s; }
+
+.celebration-finale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.celebration-text {
+  font-size: clamp(1.5rem, 2.5vw, 2.3rem);
+  font-weight: 700;
+  color: #ffd6f0;
+  text-align: center;
+}
+
+#celebrationMenuBtn {
+  min-width: 180px;
+}
+
+@keyframes pony-in-left {
+  from { transform: translateX(-140px); }
+  to { transform: translateX(0); }
+}
+
+@keyframes pony-in-right {
+  from { transform: translateX(140px) scaleX(-1); }
+  to { transform: translateX(0) scaleX(-1); }
+}
+
+@keyframes pony-step {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
 @media (max-width: 740px) {
   .menu-hero {
     min-height: 220px;
@@ -982,5 +1178,27 @@ button:hover {
   .spin-group {
     width: 100%;
     min-width: 0;
+  }
+
+  .celebration-scene {
+    min-height: 360px;
+  }
+
+  .celebration-people,
+  .cele-ponies {
+    gap: 1.4rem;
+  }
+
+  .cele-people-svg {
+    width: min(100%, 320px);
+  }
+
+  .pony {
+    transform-origin: center center;
+    scale: 0.82;
+  }
+
+  .celebration-text {
+    font-size: 1.4rem;
   }
 }

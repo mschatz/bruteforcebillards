@@ -1,5 +1,6 @@
 const STORAGE_KEY = "bruteforce-billiards-save-v1";
 const DEFAULT_POWER_PCT = 30;
+const LIGHT_SPEED_TIMEOUT = 20;
 const TABLE = { width: 1000, height: 500, rail: 34, pocketR: 24, ballR: 13 };
 const PHYS = {
   dt: 1 / 120,
@@ -37,6 +38,8 @@ const powerOut = document.getElementById("powerOut");
 const spinOut = document.getElementById("spinOut");
 const menuPanel = document.getElementById("menu");
 const gamePanel = document.getElementById("game");
+const celebrationOverlay = document.getElementById("celebrationOverlay");
+const celebrationMenuBtn = document.getElementById("celebrationMenuBtn");
 const tableCanvas = document.getElementById("table");
 const overlayCanvas = document.getElementById("overlay");
 const spinCanvas = document.getElementById("spinPicker");
@@ -68,6 +71,8 @@ const state = {
   flash: { text: "", time: 0, tone: "good" },
   message: "Tap a target ball, adjust power, then shoot.",
 };
+
+let celebrationTimers = [];
 
 function playRect() {
   return {
@@ -140,6 +145,25 @@ function createBall(id, number, x, y, kind, color, stripe = false) {
   };
 }
 
+function rackSpots() {
+  const p = playRect();
+  const tipX = p.left + (p.right - p.left) * 0.72;
+  const tipY = (p.top + p.bottom) / 2;
+  const spacing = TABLE.ballR * 2.05;
+  const spots = [];
+
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col <= row; col++) {
+      spots.push({
+        x: tipX + row * (spacing * 0.88),
+        y: tipY - (row * spacing) / 2 + col * spacing,
+      });
+    }
+  }
+
+  return spots;
+}
+
 function rackBalls(mode) {
   const balls = [];
   const p = playRect();
@@ -148,7 +172,11 @@ function rackBalls(mode) {
   balls.push(createBall("cue", 0, cueX, cueY, "cue", BALL_COLORS.cue));
 
   if (mode === "sandbox") {
-    balls.push(createBall("target", 1, p.right - 200, cueY, "solid", "#ffd43b"));
+    const spots = rackSpots();
+    const targetSpot = spots[Math.floor(Math.random() * spots.length)];
+    balls.push(
+      createBall("target", 1, targetSpot.x, targetSpot.y, "solid", "#ffd43b")
+    );
     return balls;
   }
 
@@ -156,15 +184,11 @@ function rackBalls(mode) {
     1, 9, 2, 10, 8, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15,
   ];
 
-  const tipX = p.left + (p.right - p.left) * 0.72;
-  const tipY = (p.top + p.bottom) / 2;
   let k = 0;
-  const spacing = TABLE.ballR * 2.05;
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col <= row; col++) {
+  const spots = rackSpots();
+  for (let i = 0; i < spots.length; i++) {
+    const { x, y } = spots[i];
       const n = order[k++];
-      const x = tipX + row * (spacing * 0.88);
-      const y = tipY - (row * spacing) / 2 + col * spacing;
       const kind = n === 8 ? "eight" : n < 8 ? "solid" : "stripe";
       const colorKey =
         n === 8
@@ -175,13 +199,13 @@ function rackBalls(mode) {
       balls.push(
         createBall(`ball-${n}`, n, x, y, kind, BALL_COLORS[colorKey], n > 8)
       );
-    }
   }
 
   return balls;
 }
 
 function startGame(mode) {
+  clearCelebration();
   state.mode = mode;
   state.gameOver = false;
   state.winner = null;
@@ -204,6 +228,25 @@ function startGame(mode) {
 
 function currentPlayerName() {
   return state.players[state.turn];
+}
+
+function clearCelebration() {
+  celebrationTimers.forEach((id) => clearTimeout(id));
+  celebrationTimers = [];
+  celebrationOverlay.classList.remove("active", "stage-1", "stage-2", "stage-3");
+  celebrationOverlay.setAttribute("aria-hidden", "true");
+}
+
+function startCelebration() {
+  clearCelebration();
+  celebrationOverlay.classList.add("active", "stage-1");
+  celebrationOverlay.setAttribute("aria-hidden", "false");
+  celebrationTimers.push(
+    setTimeout(() => celebrationOverlay.classList.add("stage-2"), 2600)
+  );
+  celebrationTimers.push(
+    setTimeout(() => celebrationOverlay.classList.add("stage-3"), 5200)
+  );
 }
 
 function playerGroupLabel(idx) {
@@ -251,7 +294,9 @@ function findDefaultTarget() {
 
 function mapPowerToSpeed(pct) {
   const t = pct / 100;
-  return 200 + t * t * (PHYS.cSpeed - 200);
+  const baseSpeed = 200 + t * t * (PHYS.cSpeed - 200);
+  if (pct < 100) return baseSpeed;
+  return PHYS.cSpeed * 1.6;
 }
 
 function buildShotVelocity(cue, target, includeRandomness) {
@@ -282,38 +327,101 @@ function estimateStoppingDistance(initialSpeed) {
   return Math.max(0, idealDistance);
 }
 
-function simulateBallPath(ball, maxSteps, sampleEvery) {
+function stepBallPhysics(ball, dt, options = {}) {
   const p = playRect();
+  const applyFriction = options.applyFriction !== false;
+  const drag = options.drag ?? 1;
+  const railJitter = options.railJitter ?? 0;
+
+  ball.x += ball.vx * dt;
+  ball.y += ball.vy * dt;
+
+  if (applyFriction) {
+    const decayPower = dt / PHYS.dt;
+    const decay = Math.pow(PHYS.friction * drag, decayPower);
+    ball.vx *= decay;
+    ball.vy *= decay;
+  }
+
+  if (Math.abs(ball.vx) < PHYS.minSpeed) ball.vx = 0;
+  if (Math.abs(ball.vy) < PHYS.minSpeed) ball.vy = 0;
+
+  if (ball.x - ball.r < p.left) {
+    ball.x = p.left + ball.r;
+    ball.vx = Math.abs(ball.vx) * PHYS.restitution;
+    ball.vy += railJitter ? randomJitter(railJitter) : 0;
+  }
+  if (ball.x + ball.r > p.right) {
+    ball.x = p.right - ball.r;
+    ball.vx = -Math.abs(ball.vx) * PHYS.restitution;
+    ball.vy += railJitter ? randomJitter(railJitter) : 0;
+  }
+  if (ball.y - ball.r < p.top) {
+    ball.y = p.top + ball.r;
+    ball.vy = Math.abs(ball.vy) * PHYS.restitution;
+    ball.vx += railJitter ? randomJitter(railJitter) : 0;
+  }
+  if (ball.y + ball.r > p.bottom) {
+    ball.y = p.bottom - ball.r;
+    ball.vy = -Math.abs(ball.vy) * PHYS.restitution;
+    ball.vx += railJitter ? randomJitter(railJitter) : 0;
+  }
+}
+
+function resolveBallCollision(a, b, options = {}) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const dist = Math.hypot(dx, dy);
+  const minDist = a.r + b.r;
+  if (dist === 0 || dist >= minDist) return false;
+
+  const overlap = minDist - dist;
+  const nx = dx / dist;
+  const ny = dy / dist;
+
+  a.x -= nx * overlap * 0.5;
+  a.y -= ny * overlap * 0.5;
+  b.x += nx * overlap * 0.5;
+  b.y += ny * overlap * 0.5;
+
+  const rvx = b.vx - a.vx;
+  const rvy = b.vy - a.vy;
+  const velAlongNormal = rvx * nx + rvy * ny;
+  if (velAlongNormal > 0) return false;
+
+  const jImpulse = -(1 + PHYS.restitution) * velAlongNormal / 2;
+  const jx = jImpulse * nx;
+  const jy = jImpulse * ny;
+
+  a.vx -= jx;
+  a.vy -= jy;
+  b.vx += jx;
+  b.vy += jy;
+
+  const tangent = { x: -ny, y: nx };
+  const slipScale = options.slipScale ?? 0;
+  if (slipScale) {
+    const slip = randomJitter(slipScale);
+    a.vx += tangent.x * slip;
+    a.vy += tangent.y * slip;
+    b.vx -= tangent.x * slip;
+    b.vy -= tangent.y * slip;
+  }
+
+  if (typeof options.onCueContact === "function") {
+    options.onCueContact(a, b);
+  }
+
+  return true;
+}
+
+function simulateBallPath(ball, maxSteps, sampleEvery) {
   const sim = { ...ball };
   const points = [{ x: sim.x, y: sim.y }];
   let pocketed = false;
 
   for (let i = 0; i < maxSteps; i++) {
-    sim.x += sim.vx * PHYS.dt;
-    sim.y += sim.vy * PHYS.dt;
-
-    sim.vx *= PHYS.friction;
-    sim.vy *= PHYS.friction;
-
-    if (Math.abs(sim.vx) < PHYS.minSpeed) sim.vx = 0;
-    if (Math.abs(sim.vy) < PHYS.minSpeed) sim.vy = 0;
-
-    if (sim.x - sim.r < p.left) {
-      sim.x = p.left + sim.r;
-      sim.vx = Math.abs(sim.vx) * PHYS.restitution;
-    }
-    if (sim.x + sim.r > p.right) {
-      sim.x = p.right - sim.r;
-      sim.vx = -Math.abs(sim.vx) * PHYS.restitution;
-    }
-    if (sim.y - sim.r < p.top) {
-      sim.y = p.top + sim.r;
-      sim.vy = Math.abs(sim.vy) * PHYS.restitution;
-    }
-    if (sim.y + sim.r > p.bottom) {
-      sim.y = p.bottom - sim.r;
-      sim.vy = -Math.abs(sim.vy) * PHYS.restitution;
-    }
+    stepBallPhysics(sim, PHYS.dt);
 
     if (i % sampleEvery === 0) {
       points.push({ x: sim.x, y: sim.y });
@@ -333,7 +441,6 @@ function simulateBallPath(ball, maxSteps, sampleEvery) {
 }
 
 function simulatePreviewShot(cue, target) {
-  const p = playRect();
   const previewCue = {
     x: cue.x,
     y: cue.y,
@@ -356,58 +463,24 @@ function simulatePreviewShot(cue, target) {
     previewCue.vx += -previewCue.vy * curve;
     previewCue.vy += ox * curve;
 
-    previewCue.x += previewCue.vx * PHYS.dt;
-    previewCue.y += previewCue.vy * PHYS.dt;
-
-    if (!isLightSpeedPower()) {
-      const drag = 1 - Math.abs(state.spinPick.y) * 0.001;
-      previewCue.vx *= PHYS.friction * drag;
-      previewCue.vy *= PHYS.friction * drag;
-    }
-
-    if (previewCue.x - previewCue.r < p.left) {
-      previewCue.x = p.left + previewCue.r;
-      previewCue.vx = Math.abs(previewCue.vx) * PHYS.restitution;
-    }
-    if (previewCue.x + previewCue.r > p.right) {
-      previewCue.x = p.right - previewCue.r;
-      previewCue.vx = -Math.abs(previewCue.vx) * PHYS.restitution;
-    }
-    if (previewCue.y - previewCue.r < p.top) {
-      previewCue.y = p.top + previewCue.r;
-      previewCue.vy = Math.abs(previewCue.vy) * PHYS.restitution;
-    }
-    if (previewCue.y + previewCue.r > p.bottom) {
-      previewCue.y = p.bottom - previewCue.r;
-      previewCue.vy = -Math.abs(previewCue.vy) * PHYS.restitution;
-    }
+    stepBallPhysics(previewCue, PHYS.dt, {
+      applyFriction: !isLightSpeedPower(),
+      drag: 1 - Math.abs(state.spinPick.y) * 0.001,
+    });
 
     if (i % 4 === 0) {
       points.push({ x: previewCue.x, y: previewCue.y });
     }
 
-    const dx = target.x - previewCue.x;
-    const dy = target.y - previewCue.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist <= cue.r + target.r) {
-      const normal = normalize(dx, dy);
-      const incomingSpeed = Math.hypot(previewCue.vx, previewCue.vy);
-      const incomingDir = incomingSpeed > 0
-        ? { x: previewCue.vx / incomingSpeed, y: previewCue.vy / incomingSpeed }
-        : normalize(target.x - cue.x, target.y - cue.y);
-      const normalSpeed = Math.max(
-        0,
-        incomingDir.x * normal.x + incomingDir.y * normal.y
-      ) * incomingSpeed;
-      const targetSpeed = ((1 + PHYS.restitution) * normalSpeed) / 2;
-      const targetVx = normal.x * targetSpeed;
-      const targetVy = normal.y * targetSpeed;
-      const targetPath = simulateBallPath(
-        { x: target.x, y: target.y, vx: targetVx, vy: targetVy, r: target.r },
-        1200,
-        4
-      );
-
+    const previewTarget = {
+      x: target.x,
+      y: target.y,
+      vx: 0,
+      vy: 0,
+      r: target.r,
+    };
+    if (resolveBallCollision(previewCue, previewTarget)) {
+      const targetPath = simulateBallPath(previewTarget, 1200, 4);
       contact = {
         x: previewCue.x,
         y: previewCue.y,
@@ -456,6 +529,7 @@ function beginShot() {
     firstContact: null,
     shooter: state.turn,
     wasBreak: !state.breakDone && state.mode === "8ball",
+    lightSpeedTime: 0,
   };
 
   if (speed > PHYS.cSpeed * 0.85) {
@@ -475,7 +549,17 @@ function anyBallMoving() {
 }
 
 function step(dt) {
-  const p = playRect();
+  if (state.shooting && state.lightSpeedMode && state.shotContext) {
+    state.shotContext.lightSpeedTime += dt;
+    if (state.shotContext.lightSpeedTime >= LIGHT_SPEED_TIMEOUT) {
+      const cue = getBallById("cue");
+      if (cue) {
+        cue.vx = 0;
+        cue.vy = 0;
+      }
+      state.lightSpeedMode = false;
+    }
+  }
 
   const subSteps = Math.max(
     1,
@@ -497,38 +581,11 @@ function step(dt) {
         b.vy += ox * curve * h * 120;
       }
 
-      b.x += b.vx * h;
-      b.y += b.vy * h;
-
-      if (!(b.id === "cue" && state.lightSpeedMode)) {
-        const drag = b.id === "cue" ? 1 - Math.abs(state.cueSpin.y) * 0.001 : 1;
-        b.vx *= PHYS.friction * drag;
-        b.vy *= PHYS.friction * drag;
-      }
-
-      if (Math.abs(b.vx) < PHYS.minSpeed) b.vx = 0;
-      if (Math.abs(b.vy) < PHYS.minSpeed) b.vy = 0;
-
-      if (b.x - b.r < p.left) {
-        b.x = p.left + b.r;
-        b.vx = Math.abs(b.vx) * PHYS.restitution;
-        b.vy += randomJitter(35);
-      }
-      if (b.x + b.r > p.right) {
-        b.x = p.right - b.r;
-        b.vx = -Math.abs(b.vx) * PHYS.restitution;
-        b.vy += randomJitter(35);
-      }
-      if (b.y - b.r < p.top) {
-        b.y = p.top + b.r;
-        b.vy = Math.abs(b.vy) * PHYS.restitution;
-        b.vx += randomJitter(35);
-      }
-      if (b.y + b.r > p.bottom) {
-        b.y = p.bottom - b.r;
-        b.vy = -Math.abs(b.vy) * PHYS.restitution;
-        b.vx += randomJitter(35);
-      }
+      stepBallPhysics(b, h, {
+        applyFriction: !(b.id === "cue" && state.lightSpeedMode),
+        drag: b.id === "cue" ? 1 - Math.abs(state.cueSpin.y) * 0.001 : 1,
+        railJitter: 35,
+      });
     }
 
     collideBalls();
@@ -560,48 +617,18 @@ function collideBalls() {
     for (let j = i + 1; j < list.length; j++) {
       const a = list[i];
       const b = list[j];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dist = Math.hypot(dx, dy);
-      const minDist = a.r + b.r;
-      if (dist === 0 || dist >= minDist) continue;
-
-      const overlap = minDist - dist;
-      const nx = dx / dist;
-      const ny = dy / dist;
-
-      a.x -= nx * overlap * 0.5;
-      a.y -= ny * overlap * 0.5;
-      b.x += nx * overlap * 0.5;
-      b.y += ny * overlap * 0.5;
-
-      const rvx = b.vx - a.vx;
-      const rvy = b.vy - a.vy;
-      const velAlongNormal = rvx * nx + rvy * ny;
-      if (velAlongNormal > 0) continue;
-
-      const jImpulse = -(1 + PHYS.restitution) * velAlongNormal / 2;
-      const jx = jImpulse * nx;
-      const jy = jImpulse * ny;
-
-      a.vx -= jx;
-      a.vy -= jy;
-      b.vx += jx;
-      b.vy += jy;
-
-      const tangent = { x: -ny, y: nx };
-      const slip = randomJitter(20);
-      a.vx += tangent.x * slip;
-      a.vy += tangent.y * slip;
-      b.vx -= tangent.x * slip;
-      b.vy -= tangent.y * slip;
-
-      if (
-        !state.shotContext?.firstContact &&
-        ((a.id === "cue" && b.id !== "cue") || (b.id === "cue" && a.id !== "cue"))
-      ) {
-        state.shotContext.firstContact = a.id === "cue" ? b.id : a.id;
-      }
+      resolveBallCollision(a, b, {
+        slipScale: 20,
+        onCueContact(ballA, ballB) {
+          if (
+            !state.shotContext?.firstContact &&
+            ((ballA.id === "cue" && ballB.id !== "cue") ||
+              (ballB.id === "cue" && ballA.id !== "cue"))
+          ) {
+            state.shotContext.firstContact = ballA.id === "cue" ? ballB.id : ballA.id;
+          }
+        },
+      });
     }
   }
 }
@@ -648,6 +675,14 @@ function evaluateShotEnd() {
   }
 
   if (state.mode === "sandbox") {
+    if (!activeBalls().some((b) => b.id !== "cue")) {
+      state.gameOver = true;
+      state.message = "Sandbox clear.";
+      state.selectedTargetId = null;
+      updateLabels();
+      startCelebration();
+      return;
+    }
     state.message = cuePocketed
       ? "Scratch in sandbox. Cue ball respotted."
       : "Shot complete.";
@@ -678,6 +713,7 @@ function evaluateShotEnd() {
       ? `${state.winner} wins by sinking the 8-ball.`
       : `${state.winner} wins (8-ball foul).`;
     updateLabels();
+    if (legal) startCelebration();
     return;
   }
 
@@ -776,6 +812,42 @@ function drawBall(ball) {
   }
 }
 
+function drawCueStick(cue, target) {
+  const aim = normalize(target.x - cue.x, target.y - cue.y);
+  const startOffset = cue.r + 12;
+  const stickLength = 160;
+  const backX = cue.x - aim.x * (startOffset + stickLength);
+  const backY = cue.y - aim.y * (startOffset + stickLength);
+  const frontX = cue.x - aim.x * startOffset;
+  const frontY = cue.y - aim.y * startOffset;
+
+  overlayCtx.save();
+  overlayCtx.lineCap = "round";
+
+  overlayCtx.strokeStyle = "#5f3a1b";
+  overlayCtx.lineWidth = 7;
+  overlayCtx.beginPath();
+  overlayCtx.moveTo(backX, backY);
+  overlayCtx.lineTo(frontX, frontY);
+  overlayCtx.stroke();
+
+  overlayCtx.strokeStyle = "#d9c28a";
+  overlayCtx.lineWidth = 2;
+  overlayCtx.beginPath();
+  overlayCtx.moveTo(backX + aim.x * 10, backY + aim.y * 10);
+  overlayCtx.lineTo(frontX, frontY);
+  overlayCtx.stroke();
+
+  overlayCtx.strokeStyle = "#d9ecff";
+  overlayCtx.lineWidth = 3;
+  overlayCtx.beginPath();
+  overlayCtx.moveTo(frontX, frontY);
+  overlayCtx.lineTo(frontX + aim.x * 8, frontY + aim.y * 8);
+  overlayCtx.stroke();
+
+  overlayCtx.restore();
+}
+
 function drawOverlay() {
   overlayCtx.clearRect(0, 0, TABLE.width, TABLE.height);
 
@@ -810,6 +882,8 @@ function drawOverlay() {
   const cue = getBallById("cue");
   const target = getBallById(state.selectedTargetId);
   if (!cue || !target || state.shooting) return;
+
+  drawCueStick(cue, target);
 
   overlayCtx.strokeStyle = "rgba(255,255,255,0.65)";
   overlayCtx.lineWidth = 2;
@@ -932,6 +1006,7 @@ function pushHistory() {
 
 function undoShot() {
   if (!state.history.length || state.shooting) return;
+  clearCelebration();
   const last = state.history.pop();
   state.mode = last.mode;
   state.gameOver = last.gameOver;
@@ -977,6 +1052,7 @@ function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return false;
   try {
+    clearCelebration();
     const save = JSON.parse(raw);
     state.mode = save.mode;
     state.gameOver = !!save.gameOver;
@@ -1054,6 +1130,7 @@ function setSpinFromEvent(evt) {
 }
 
 function showMenu() {
+  clearCelebration();
   menuPanel.classList.add("active");
   gamePanel.classList.remove("active");
 }
@@ -1061,6 +1138,32 @@ function showMenu() {
 function showGame() {
   menuPanel.classList.remove("active");
   gamePanel.classList.add("active");
+}
+
+function showCelebrationPreview() {
+  clearCelebration();
+  state.mode = "sandbox";
+  state.gameOver = true;
+  state.winner = null;
+  state.turn = 0;
+  state.groups = [null, null];
+  state.breakDone = true;
+  state.balls = rackBalls("sandbox");
+  state.selectedTargetId = null;
+  state.history = [];
+  state.shooting = false;
+  state.shotContext = null;
+  state.lightSpeedMode = false;
+  state.spinPick = { x: 0, y: 0 };
+  state.cueSpin = { x: 0, y: 0 };
+  state.powerPct = DEFAULT_POWER_PCT;
+  state.warp = { intensity: 0, time: 0 };
+  state.flash = { text: "", time: 0, tone: "good" };
+  state.message = "Celebration preview.";
+  powerInput.value = String(DEFAULT_POWER_PCT);
+  updateLabels();
+  showGame();
+  startCelebration();
 }
 
 document.getElementById("start8").addEventListener("click", () => startGame("8ball"));
@@ -1081,6 +1184,7 @@ document.getElementById("newRackBtn").addEventListener("click", () => {
   startGame(state.mode);
 });
 document.getElementById("backMenuBtn").addEventListener("click", showMenu);
+celebrationMenuBtn.addEventListener("click", showMenu);
 
 powerInput.addEventListener("input", () => {
   state.powerPct = Number(powerInput.value);
@@ -1102,6 +1206,11 @@ spinCanvas.addEventListener("pointermove", (evt) => {
 });
 overlayCanvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
 spinCanvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
+document.addEventListener("keydown", (evt) => {
+  if (evt.repeat || evt.key.toLowerCase() !== "w") return;
+  if (!menuPanel.classList.contains("active")) return;
+  showCelebrationPreview();
+});
 
 let last = performance.now();
 let acc = 0;
