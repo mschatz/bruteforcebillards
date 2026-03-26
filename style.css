@@ -58,6 +58,13 @@ body {
   color: rgba(231, 239, 255, 0.72);
 }
 
+.panel-status {
+  margin: 0.7rem 0 0;
+  text-align: right;
+  font-size: 0.82rem;
+  color: rgba(231, 239, 255, 0.72);
+}
+
 .menu-hero {
   position: relative;
   margin: 1rem 0 1.1rem;
@@ -911,6 +918,13 @@ button:hover {
   background: rgba(8, 17, 31, 0.88);
   border-radius: 12px;
   z-index: 20;
+}
+
+.celebration-status {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.9rem;
+  margin: 0;
 }
 
 .celebration-overlay.active {
