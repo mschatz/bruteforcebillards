@@ -61,7 +61,8 @@ body {
 .menu-hero {
   position: relative;
   margin: 1rem 0 1.1rem;
-  min-height: clamp(250px, 34vw, 360px);
+  height: 33svh;
+  min-height: 220px;
   border: 1px solid #2a4d7a;
   border-radius: 16px;
   overflow: hidden;
@@ -77,7 +78,23 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+}
+
+.hero-character {
+  position: absolute;
+  bottom: 2%;
+  height: 96%;
+  width: auto;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.hero-character-guy {
+  left: 1.5%;
+}
+
+.hero-character-girl {
+  right: 1.5%;
 }
 
 .hero-table {
@@ -504,7 +521,7 @@ button:hover {
   }
 
   .menu-hero {
-    min-height: clamp(280px, 46vw, 380px);
+    height: 33svh;
     margin: 0.75rem 0 0.85rem;
   }
 
@@ -1081,8 +1098,21 @@ button:hover {
 
 @media (max-width: 740px) {
   .menu-hero {
-    height: clamp(220px, 72vw, 320px);
-    min-height: 0;
+    height: 33svh;
+    min-height: 205px;
+  }
+
+  .hero-character {
+    height: 88%;
+    bottom: 5%;
+  }
+
+  .hero-character-guy {
+    left: 0;
+  }
+
+  .hero-character-girl {
+    right: 0;
   }
 
   .hero-table {
