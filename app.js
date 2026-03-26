@@ -1090,11 +1090,22 @@ pathToggleInput.addEventListener("change", () => {
   saveState();
 });
 
-overlayCanvas.addEventListener("pointerdown", handleTableTap);
-spinCanvas.addEventListener("pointerdown", setSpinFromEvent);
-spinCanvas.addEventListener("pointermove", (evt) => {
-  if (evt.buttons) setSpinFromEvent(evt);
+overlayCanvas.addEventListener("pointerdown", (evt) => {
+  evt.preventDefault();
+  handleTableTap(evt);
 });
+spinCanvas.addEventListener("pointerdown", (evt) => {
+  evt.preventDefault();
+  setSpinFromEvent(evt);
+});
+spinCanvas.addEventListener("pointermove", (evt) => {
+  if (evt.buttons) {
+    evt.preventDefault();
+    setSpinFromEvent(evt);
+  }
+});
+overlayCanvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
+spinCanvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
 
 let last = performance.now();
 let acc = 0;
